@@ -38,7 +38,8 @@ const OTP_ERRORS = {
   no_code: 'No active code found. Request a new one.'
 };
 
-function otpErrorResponse(res, reason) {
+function otpErrorResponse(res, reason, context = '') {
+  console.warn(`[otp] verification rejected: ${reason}${context ? ` (${context})` : ''}`);
   return res.status(401).json({ error: OTP_ERRORS[reason] || 'Verification failed.', reason });
 }
 
@@ -122,7 +123,7 @@ router.post(
     }
 
     const result = verifyOtp(user.id, 'email_verify', code);
-    if (!result.ok) return otpErrorResponse(res, result.reason);
+    if (!result.ok) return otpErrorResponse(res, result.reason, `verify-email ${email}`);
 
     usersRepo.setEmailVerified(user.id);
     auditRepo.log({ actorId: user.id, action: 'verify_email', targetType: 'user', targetId: user.id });
@@ -212,14 +213,16 @@ router.post(
 
     const user = usersRepo.findByEmail(email);
     if (!user || !user.emailVerified) {
+      console.warn(`[otp] login/verify: no verified user for ${email || '<empty>'}`);
       return res.status(401).json({ error: 'Verification failed.' });
     }
     if (user.status !== 'active') {
+      console.warn(`[otp] login/verify: user ${email} status=${user.status}`);
       return res.status(403).json({ error: 'Your account is not active.' });
     }
 
     const result = verifyOtp(user.id, 'login', code);
-    if (!result.ok) return otpErrorResponse(res, result.reason);
+    if (!result.ok) return otpErrorResponse(res, result.reason, `login/verify ${email}`);
 
     const token = signSession(user);
     setSessionCookie(res, token);
