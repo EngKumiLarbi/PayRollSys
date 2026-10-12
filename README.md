@@ -109,6 +109,7 @@ src/
     errorHandler.js           async wrapper, 404, centralized errors
   routes/
     auth.js                   register / verify-email / login / login-verify / otp-resend / logout / me
+    setup.js                  first-run HR bootstrap (/setup, self-disables once an HR exists)
     hr.js                     verification, staff, payroll, summary, audit
     staff.js                  personal profile + payroll
   services/
@@ -150,6 +151,9 @@ render.yaml                   Render Blueprint (web service + disk + env)
 - Terminate TLS at the proxy (reverse proxy / load balancer); `trust proxy`
   is enabled so secure cookies work behind HTTPS.
 - The SQLite file under `data/` holds corporate records and is git-ignored.
+- **First HR admin** — open `/setup` to create the initial HR administrator. The
+  route (and the login page link to it) is available only until one active HR
+  account exists. Set `SETUP_TOKEN` to additionally require a shared secret.
 
 ## Deploy: GitHub → Render
 
@@ -161,7 +165,14 @@ render.yaml                   Render Blueprint (web service + disk + env)
    - SMTP env vars for Gmail (`SMTP_PASS` is a secret you set in the dashboard)
 3. When prompted, paste `SMTP_PASS` = the 16-char Gmail app password
    (**no spaces**). `JWT_SECRET`/`PEPPER` are generated automatically.
-4. Open the service **Shell** and create your HR admin once:
+4. Create your first HR admin. Two options:
+
+   **a) First-run setup page (easiest)** — open `https://<your-app>.onrender.com/setup`
+   and fill in the form. This page only works while no active HR account exists,
+   then disables itself. Set an optional `SETUP_TOKEN` env var to require a shared
+   secret on that form.
+
+   **b) Render Shell** — run once:
 
    ```bash
    ADMIN_EMAIL=you@company.com ADMIN_PASSWORD='StrongPass#2026' npm run create-admin

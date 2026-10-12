@@ -56,6 +56,12 @@ module.exports = {
   bcryptRounds: 12,
   corporateEmailDomain: (process.env.CORPORATE_EMAIL_DOMAIN || '').trim().toLowerCase(),
 
+  // --- First-run HR bootstrap ---------------------------------------------
+  // The /setup page lets an operator create the very first HR administrator.
+  // It only works while no active HR account exists. Set SETUP_TOKEN to also
+  // require a shared secret (recommended when the app is publicly reachable).
+  setupToken: (process.env.SETUP_TOKEN || '').trim(),
+
   // --- SMTP mail transport (OTP delivery) ---------------------------------
   smtp: {
     host: process.env.SMTP_HOST || '',

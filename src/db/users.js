@@ -53,6 +53,15 @@ const usersRepo = {
       .all();
   },
 
+  // Number of usable HR administrators. Used by the first-run setup gate: while
+  // this is 0 the bootstrap page is open so an initial HR admin can be created.
+  countActiveHr() {
+    const row = db
+      .prepare(`SELECT COUNT(*) AS n FROM users WHERE role = 'hr' AND status = 'active'`)
+      .get();
+    return Number(row.n);
+  },
+
   listStaff() {
     return db
       .prepare(

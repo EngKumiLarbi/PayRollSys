@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 
 const config = require('./config');
 const authRoutes = require('./routes/auth');
+const setupRoutes = require('./routes/setup');
 const hrRoutes = require('./routes/hr');
 const staffRoutes = require('./routes/staff');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
@@ -51,6 +52,7 @@ app.use(
 
 // API surface.
 app.use('/api/auth', authRoutes);
+app.use('/api/setup', setupRoutes);
 app.use('/api/hr', hrRoutes);
 app.use('/api/staff', staffRoutes);
 
@@ -60,6 +62,9 @@ app.get('/health', (req, res) => res.json({ status: 'ok', env: config.env }));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'index.html')));
 app.get('/register', (req, res) =>
   res.sendFile(path.join(__dirname, '..', 'public', 'register.html'))
+);
+app.get('/setup', (req, res) =>
+  res.sendFile(path.join(__dirname, '..', 'public', 'setup.html'))
 );
 app.get('/hr', (req, res) =>
   res.sendFile(path.join(__dirname, '..', 'public', 'hr-dashboard.html'))
