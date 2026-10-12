@@ -49,8 +49,11 @@ services:
       - key: MAIL_FROM
         value: "PayRollSys <onboarding@resend.dev>"
       # --- OTP -------------------------------------------------------------
+      # Disabled: on the free tier the DB resets on restart, which makes the
+      # emailed 2FA code unreliable. Set to "true" (and use a paid instance +
+      # persistent disk) to re-enable email verification and login 2FA.
       - key: OTP_ENABLED
-        value: "true"
+        value: "false"
       - key: OTP_LENGTH
         value: "6"
       - key: OTP_TTL_MINUTES
