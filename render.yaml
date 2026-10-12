@@ -43,6 +43,11 @@ services:
         sync: false                  # set the 16-char app password in the dashboard
       - key: SMTP_FROM
         value: "PayRollSys <reindorfoppong44@gmail.com>"
+      # --- HTTPS email API (recommended on the free tier: SMTP is blocked) ---
+      - key: RESEND_API_KEY
+        sync: false                  # set your Resend API key in the dashboard
+      - key: MAIL_FROM
+        value: "PayRollSys <onboarding@resend.dev>"
       # --- OTP -------------------------------------------------------------
       - key: OTP_ENABLED
         value: "true"

@@ -67,6 +67,24 @@ async function sendMail({ to, subject, text }) {
   return info;
 }
 
+// Sends via Resend's HTTPS API (https://resend.com). Preferred because it works
+// even where outbound SMTP ports are blocked (e.g. Render's free tier).
+async function sendViaResend({ to, subject, text }) {
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${config.mail.resendApiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ from: config.mail.resendFrom, to: [to], subject, text })
+  });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '');
+    throw new Error(`Resend API ${res.status} ${detail.slice(0, 200)}`);
+  }
+  return res.json();
+}
+
 function printConsoleOtp(to, code, purpose) {
   console.log(
     `\n================ DEV OTP ================\n` +
@@ -80,14 +98,18 @@ function printConsoleOtp(to, code, purpose) {
 
 async function sendOtpEmail(to, code, purpose) {
   const subject = subjectFor(purpose);
-  if (!config.smtp.host) {
-    // No mail server configured: print the code so local/dev flows work.
+  const text = textFor(code, purpose, config.otp.ttlMinutes);
+  try {
+    if (config.mail.resendApiKey) {
+      return await sendViaResend({ to, subject, text });
+    }
+    if (config.smtp.host) {
+      return await sendMail({ to, subject, text });
+    }
+    // No transport configured: print the code so local/dev flows work.
     getTransporter();
     printConsoleOtp(to, code, purpose);
     return { dev: true };
-  }
-  try {
-    return await sendMail({ to, subject, text: textFor(code, purpose, config.otp.ttlMinutes) });
   } catch (err) {
     // Delivery failed (bad credentials, or outbound SMTP blocked by the host
     // such as Render's free tier). Fall back to the server log so the code is

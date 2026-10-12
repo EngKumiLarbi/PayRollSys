@@ -58,6 +58,22 @@ For Gmail, enable 2-Step Verification and create an **App Password**
 (https://myaccount.google.com/apppasswords), then use `smtp.gmail.com`, port
 `587`, and the 16-character app password (spaces removed) as `SMTP_PASS`.
 
+#### HTTPS email API (Resend) — for hosts that block SMTP
+
+Some hosts (notably **Render's free tier**) block outbound SMTP ports, so Gmail
+delivery fails there. Set `RESEND_API_KEY` (free at https://resend.com) and the
+mailer will send over HTTPS instead of SMTP:
+
+```
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxx
+MAIL_FROM="HR Payroll Portal <onboarding@resend.dev>"
+```
+
+`RESEND_API_KEY` takes precedence over SMTP when present. With Resend's shared
+`onboarding@resend.dev` sender you can only email your own account address until
+you add and verify a domain, then set `MAIL_FROM` to that domain. If every
+transport fails, the OTP is printed to the server log as a `DEV OTP` block.
+
 Two flows use OTP:
 
 - **Signup** — after registering, the user confirms their email with a
@@ -189,10 +205,9 @@ render.yaml                   Render Blueprint (web service + disk + env)
   accept that the SQLite database resets on every deploy/restart.
 - **Email on the free tier** — Render blocks outbound SMTP ports `25`/`465`/`587`
   on free web services, so Gmail/SMTP OTP emails **cannot be sent** from a free
-  service. The app fails fast (no more 502) and prints the OTP to the service
-  **Logs** as a `DEV OTP` block so you can still sign in. For real delivery,
-  either upgrade to any paid instance (SMTP works) or switch the mailer to an
-  HTTPS email API (e.g. Resend/SendGrid).
+  service. Set `RESEND_API_KEY` to send over HTTPS (recommended), or upgrade to
+  any paid instance to use SMTP. Either way the app fails fast (no more 502) and
+  prints the OTP to the service **Logs** as a `DEV OTP` block as a last resort.
 - **Set `SMTP_PASS` only in Render** — never commit it. It is already git-ignored
   locally via `.env`.
 

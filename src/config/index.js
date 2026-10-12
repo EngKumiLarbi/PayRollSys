@@ -72,6 +72,19 @@ module.exports = {
     from: process.env.SMTP_FROM || 'HR Payroll Portal <no-reply@company.com>'
   },
 
+  // --- HTTPS email API (works where outbound SMTP is blocked) --------------
+  // Preferred over SMTP when RESEND_API_KEY is set. Uses Resend's REST API.
+  mail: {
+    resendApiKey: (process.env.RESEND_API_KEY || '').trim(),
+    // Sender for the HTTPS API. Defaults to Resend's shared test sender, which
+    // can only deliver to the account owner's address until you verify a domain.
+    resendFrom: (
+      process.env.MAIL_FROM ||
+      process.env.SMTP_FROM ||
+      'HR Payroll Portal <onboarding@resend.dev>'
+    ).trim()
+  },
+
   // --- One-Time Password (email verification + login 2FA) -----------------
   otp: {
     enabled: String(process.env.OTP_ENABLED || 'true').toLowerCase() !== 'false',
