@@ -15,13 +15,13 @@ const { asyncHandler } = require('../middleware/errorHandler');
 const router = express.Router();
 
 // Delivers an OTP without letting a mail outage break the request flow.
-async function deliverOtp(user, purpose) {
+// The email is sent fire-and-forget so a slow or unreachable mail server never
+// stalls the HTTP response (which would surface as a 502 behind a proxy).
+function deliverOtp(user, purpose) {
   const { code } = issueOtp(user.id, purpose);
-  try {
-    await sendOtpEmail(user.email, code, purpose);
-  } catch (err) {
-    console.error('[mail] failed to deliver OTP:', err.message);
-  }
+  Promise.resolve()
+    .then(() => sendOtpEmail(user.email, code, purpose))
+    .catch((err) => console.error('[mail] failed to deliver OTP:', err.message));
   return code;
 }
 

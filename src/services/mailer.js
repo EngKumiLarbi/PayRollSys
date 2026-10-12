@@ -22,7 +22,12 @@ function getTransporter() {
       host: config.smtp.host,
       port: config.smtp.port,
       secure: config.smtp.secure,
-      auth: config.smtp.user ? { user: config.smtp.user, pass: config.smtp.pass } : undefined
+      auth: config.smtp.user ? { user: config.smtp.user, pass: config.smtp.pass } : undefined,
+      // Keep these short so a blocked/unreachable mail server (e.g. Render's
+      // free tier blocks outbound SMTP) fails fast instead of hanging a request.
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000
     });
     console.log(`[mail] SMTP transport configured (${config.smtp.host}:${config.smtp.port})`);
   } else {
@@ -62,22 +67,35 @@ async function sendMail({ to, subject, text }) {
   return info;
 }
 
+function printConsoleOtp(to, code, purpose) {
+  console.log(
+    `\n================ DEV OTP ================\n` +
+      ` To      : ${to}\n` +
+      ` Purpose : ${purpose}\n` +
+      ` Code    : ${code}\n` +
+      ` Expires : ${config.otp.ttlMinutes} minutes\n` +
+      `=========================================\n`
+  );
+}
+
 async function sendOtpEmail(to, code, purpose) {
   const subject = subjectFor(purpose);
-  if (consoleFallback || !config.smtp.host) {
-    // Ensure fallback warning is emitted even before first real send.
+  if (!config.smtp.host) {
+    // No mail server configured: print the code so local/dev flows work.
     getTransporter();
-    console.log(
-      `\n================ DEV OTP ================\n` +
-        ` To      : ${to}\n` +
-        ` Purpose : ${purpose}\n` +
-        ` Code    : ${code}\n` +
-        ` Expires : ${config.otp.ttlMinutes} minutes\n` +
-        `=========================================\n`
-    );
+    printConsoleOtp(to, code, purpose);
     return { dev: true };
   }
-  return sendMail({ to, subject, text: textFor(code, purpose, config.otp.ttlMinutes) });
+  try {
+    return await sendMail({ to, subject, text: textFor(code, purpose, config.otp.ttlMinutes) });
+  } catch (err) {
+    // Delivery failed (bad credentials, or outbound SMTP blocked by the host
+    // such as Render's free tier). Fall back to the server log so the code is
+    // still retrievable instead of leaving the account locked out.
+    console.error(`[mail] OTP delivery failed (${err.message}). Falling back to server log.`);
+    printConsoleOtp(to, code, purpose);
+    return { fallback: true };
+  }
 }
 
 module.exports = { sendOtpEmail };

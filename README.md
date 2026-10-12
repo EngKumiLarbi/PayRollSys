@@ -187,6 +187,12 @@ render.yaml                   Render Blueprint (web service + disk + env)
 - **Persistent disk** — Render disks require a paid instance type. On the free
   tier the filesystem is ephemeral, so either attach a disk (recommended) or
   accept that the SQLite database resets on every deploy/restart.
+- **Email on the free tier** — Render blocks outbound SMTP ports `25`/`465`/`587`
+  on free web services, so Gmail/SMTP OTP emails **cannot be sent** from a free
+  service. The app fails fast (no more 502) and prints the OTP to the service
+  **Logs** as a `DEV OTP` block so you can still sign in. For real delivery,
+  either upgrade to any paid instance (SMTP works) or switch the mailer to an
+  HTTPS email API (e.g. Resend/SendGrid).
 - **Set `SMTP_PASS` only in Render** — never commit it. It is already git-ignored
   locally via `.env`.
 
