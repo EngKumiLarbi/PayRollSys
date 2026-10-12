@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Payroll | Corporate HR &amp; Payroll Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="min-h-screen bg-slate-100">
+  <header class="bg-slate-900 text-white">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-lg bg-white/10 flex items-center justify-center font-bold">HR</div>
+        <div>
+          <p class="text-sm font-semibold leading-tight">Employee Self-Service</p>
+          <p class="text-xs text-slate-300" id="who">—</p>
+        </div>
+      </div>
+      <button id="logout" class="text-sm rounded-lg bg-white/10 hover:bg-white/20 px-3 py-1.5">Sign out</button>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-6 space-y-6">
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="bg-white rounded-2xl border border-slate-200 p-5">
+        <p class="text-xs uppercase tracking-wide text-slate-500">Base salary</p>
+        <p class="mt-1 text-2xl font-semibold text-slate-800" id="stat-salary">—</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-5">
+        <p class="text-xs uppercase tracking-wide text-slate-500">Pending payments</p>
+        <p class="mt-1 text-2xl font-semibold text-amber-600" id="stat-pending">—</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-5">
+        <p class="text-xs uppercase tracking-wide text-slate-500">Next deposit ETA</p>
+        <p class="mt-1 text-2xl font-semibold text-green-600" id="stat-eta">—</p>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200">
+      <div class="px-5 py-4 border-b border-slate-100">
+        <h2 class="font-semibold text-slate-800">My profile</h2>
+      </div>
+      <dl class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
+        <div class="flex justify-between border-b border-slate-100 pb-2"><dt class="text-slate-500">Full name</dt><dd id="p-name" class="font-medium"></dd></div>
+        <div class="flex justify-between border-b border-slate-100 pb-2"><dt class="text-slate-500">Employee ID</dt><dd id="p-empid" class="font-mono text-xs"></dd></div>
+        <div class="flex justify-between border-b border-slate-100 pb-2"><dt class="text-slate-500">Email</dt><dd id="p-email"></dd></div>
+        <div class="flex justify-between border-b border-slate-100 pb-2"><dt class="text-slate-500">Department</dt><dd id="p-dept"></dd></div>
+        <div class="flex justify-between border-b border-slate-100 pb-2"><dt class="text-slate-500">Position</dt><dd id="p-pos"></dd></div>
+        <div class="flex justify-between border-b border-slate-100 pb-2"><dt class="text-slate-500">Currency</dt><dd id="p-currency"></dd></div>
+      </dl>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200">
+      <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+        <h2 class="font-semibold text-slate-800">Compensation history</h2>
+        <span class="text-xs text-slate-400">Paid vs. Pending</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 text-slate-500 text-left">
+            <tr>
+              <th class="px-5 py-2 font-medium">Period</th>
+              <th class="px-5 py-2 font-medium">Amount</th>
+              <th class="px-5 py-2 font-medium">Status</th>
+              <th class="px-5 py-2 font-medium">ETA</th>
+              <th class="px-5 py-2 font-medium">Paid on</th>
+            </tr>
+          </thead>
+          <tbody id="payroll-body" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+      <p id="payroll-empty" class="px-5 py-6 text-sm text-slate-400 hidden">No payroll records yet.</p>
+    </section>
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/staff.js"></script>
+</body>
+</html>

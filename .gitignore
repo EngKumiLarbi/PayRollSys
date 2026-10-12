@@ -1,0 +1,17 @@
+node_modules/
+.env
+*.log
+npm-debug.log*
+
+# Local database files (contain corporate records - never commit)
+data/
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

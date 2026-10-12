@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HR Dashboard | Corporate HR &amp; Payroll Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="min-h-screen bg-slate-100">
+  <header class="bg-slate-900 text-white">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-lg bg-white/10 flex items-center justify-center font-bold">HR</div>
+        <div>
+          <p class="text-sm font-semibold leading-tight">HR / Administrator Console</p>
+          <p class="text-xs text-slate-300" id="who">—</p>
+        </div>
+      </div>
+      <button id="logout" class="text-sm rounded-lg bg-white/10 hover:bg-white/20 px-3 py-1.5">Sign out</button>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="bg-white rounded-2xl border border-slate-200 p-5">
+        <p class="text-xs uppercase tracking-wide text-slate-500">Outstanding liabilities</p>
+        <p class="mt-1 text-2xl font-semibold text-amber-600" id="stat-liability">—</p>
+        <p class="text-xs text-slate-400" id="stat-pending-count">—</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-5">
+        <p class="text-xs uppercase tracking-wide text-slate-500">Completed disbursements</p>
+        <p class="mt-1 text-2xl font-semibold text-green-600" id="stat-disbursed">—</p>
+        <p class="text-xs text-slate-400" id="stat-paid-count">—</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-5">
+        <p class="text-xs uppercase tracking-wide text-slate-500">Total payroll records</p>
+        <p class="mt-1 text-2xl font-semibold text-slate-800" id="stat-total">—</p>
+        <p class="text-xs text-slate-400" id="stat-total-amount">—</p>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200">
+      <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+        <h2 class="font-semibold text-slate-800">Pending registrations</h2>
+        <span class="text-xs text-slate-400" id="pending-hint">Employment verification required before access</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 text-slate-500 text-left">
+            <tr>
+              <th class="px-5 py-2 font-medium">Employee ID</th>
+              <th class="px-5 py-2 font-medium">Name</th>
+              <th class="px-5 py-2 font-medium">Email</th>
+              <th class="px-5 py-2 font-medium">Role</th>
+              <th class="px-5 py-2 font-medium text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pending-body" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+      <p id="pending-empty" class="px-5 py-6 text-sm text-slate-400 hidden">No pending registrations.</p>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200">
+      <div class="px-5 py-4 border-b border-slate-100">
+        <h2 class="font-semibold text-slate-800">Initiate payment cycle</h2>
+        <p class="text-xs text-slate-400">Create a payroll record for an employee</p>
+      </div>
+      <form id="payroll-form" class="p-5 grid grid-cols-1 sm:grid-cols-5 gap-3 items-end">
+        <div class="sm:col-span-2">
+          <label class="block text-xs font-medium text-slate-600">Employee</label>
+          <select id="pay-user" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-600">Period</label>
+          <input id="pay-period" type="month" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-600">Amount</label>
+          <input id="pay-amount" type="number" min="0" step="0.01" placeholder="0.00"
+                 class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-600">ETA (deposit)</label>
+          <input id="pay-eta" type="date" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        </div>
+        <div class="sm:col-span-5">
+          <button class="rounded-lg bg-slate-900 text-white text-sm px-4 py-2 hover:bg-slate-800">Initiate cycle</button>
+          <span id="payroll-message" class="ml-3 text-sm"></span>
+        </div>
+      </form>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200">
+      <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+        <h2 class="font-semibold text-slate-800">Payroll records</h2>
+        <span class="text-xs text-slate-400">Full corporate visibility</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 text-slate-500 text-left">
+            <tr>
+              <th class="px-5 py-2 font-medium">Employee</th>
+              <th class="px-5 py-2 font-medium">Period</th>
+              <th class="px-5 py-2 font-medium">Amount</th>
+              <th class="px-5 py-2 font-medium">Status</th>
+              <th class="px-5 py-2 font-medium">ETA</th>
+              <th class="px-5 py-2 font-medium text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody id="payroll-body" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+      <p id="payroll-empty" class="px-5 py-6 text-sm text-slate-400 hidden">No payroll records yet.</p>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200">
+      <div class="px-5 py-4 border-b border-slate-100">
+        <h2 class="font-semibold text-slate-800">Recent activity (audit trail)</h2>
+      </div>
+      <ul id="audit-list" class="divide-y divide-slate-100 text-sm"></ul>
+    </section>
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/hr.js"></script>
+</body>
+</html>

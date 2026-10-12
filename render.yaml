@@ -1,0 +1,60 @@
+# ---------------------------------------------------------------------------
+# Render Blueprint (https://render.com/docs/blueprint-spec)
+# Deploy with: New + > Blueprint > pick this repository.
+#
+# After the first deploy, open the service Shell and run once:
+#   ADMIN_EMAIL=you@company.com ADMIN_PASSWORD='StrongPass#2026' npm run create-admin
+# ---------------------------------------------------------------------------
+services:
+  - type: web
+    name: payroll-system
+    runtime: node
+    plan: starter            # persistent disks require a paid instance type
+    region: oregon
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true          # Render generates a strong secret
+      - key: PEPPER
+        generateValue: true          # server-side pepper, never stored in DB
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: COOKIE_NAME
+        value: hrp_session
+      - key: DATABASE_FILE
+        value: /var/data/payroll.db  # lives on the persistent disk below
+      - key: CORPORATE_EMAIL_DOMAIN
+        sync: false                  # optional: e.g. company.com
+      # --- SMTP (Gmail app password) ---------------------------------------
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_SECURE
+        value: "false"
+      - key: SMTP_USER
+        value: reindorfoppong44@gmail.com
+      - key: SMTP_PASS
+        sync: false                  # set the 16-char app password in the dashboard
+      - key: SMTP_FROM
+        value: "PayRollSys <reindorfoppong44@gmail.com>"
+      # --- OTP -------------------------------------------------------------
+      - key: OTP_ENABLED
+        value: "true"
+      - key: OTP_LENGTH
+        value: "6"
+      - key: OTP_TTL_MINUTES
+        value: "10"
+      - key: OTP_MAX_ATTEMPTS
+        value: "5"
+      - key: OTP_RESEND_COOLDOWN_SECONDS
+        value: "60"
+    disk:
+      name: payroll-data
+      mountPath: /var/data
+      sizeGB: 1
