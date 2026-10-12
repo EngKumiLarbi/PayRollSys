@@ -94,6 +94,10 @@ router.post(
       });
     }
 
+    // OTP disabled: there is no email step to satisfy, so mark the address
+    // verified up-front. HR employment verification still gates activation.
+    usersRepo.setEmailVerified(user.id);
+
     return res.status(201).json({
       message:
         'Registration received. An HR administrator must verify your employment before you can sign in.',
@@ -162,7 +166,7 @@ router.post(
       return res.status(401).json({ error: 'Invalid credentials.' });
     }
 
-    if (!user.emailVerified) {
+    if (config.otp.enabled && !user.emailVerified) {
       return res.status(403).json({
         error: 'Please verify your email address first.',
         otpRequired: true,
