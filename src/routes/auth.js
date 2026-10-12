@@ -52,7 +52,7 @@ router.post(
     }
 
     if (usersRepo.findByEmail(sanitized.email)) {
-      return res.status(409).json({ error: 'That corporate email is already registered.' });
+      return res.status(409).json({ error: 'That email is already registered.' });
     }
     if (usersRepo.findByEmployeeId(sanitized.employeeId)) {
       return res.status(409).json({ error: 'That employee ID is already registered.' });
@@ -103,7 +103,7 @@ router.post(
   })
 );
 
-// POST /api/auth/verify-email - confirms ownership of the corporate email
+// POST /api/auth/verify-email - confirms ownership of the email address
 router.post(
   '/verify-email',
   asyncHandler(async (req, res) => {

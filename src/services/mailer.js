@@ -42,7 +42,7 @@ function subjectFor(purpose) {
 function textFor(code, purpose, ttlMinutes) {
   const reason =
     purpose === 'email_verify'
-      ? 'confirm your corporate email during registration'
+      ? 'confirm your email address during registration'
       : 'complete your sign-in';
   return [
     `Your verification code to ${reason} is: ${code}`,

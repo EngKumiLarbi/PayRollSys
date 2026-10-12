@@ -6,7 +6,7 @@
  * demo passwords).
  *
  * Required env vars:
- *   ADMIN_EMAIL        corporate email of the HR admin
+ *   ADMIN_EMAIL        email of the HR admin
  *   ADMIN_PASSWORD     strong password (same complexity rules as sign-up)
  * Optional:
  *   ADMIN_NAME         full name (default "HR Administrator")

@@ -22,13 +22,15 @@ function sanitizeString(value) {
 }
 
 function validateEmail(email) {
-  if (!isNonEmptyString(email)) return 'Corporate email is required.';
+  if (!isNonEmptyString(email)) return 'Email is required.';
   const value = email.trim().toLowerCase();
   if (!EMAIL_RE.test(value)) return 'Email address is not a valid format.';
+  // Domain restriction is OPTIONAL. When CORPORATE_EMAIL_DOMAIN is unset
+  // (the default) any valid email address is accepted.
   if (config.corporateEmailDomain) {
     const domain = value.split('@')[1];
     if (domain !== config.corporateEmailDomain) {
-      return `Email must use the corporate domain @${config.corporateEmailDomain}.`;
+      return `Email must use the @${config.corporateEmailDomain} domain.`;
     }
   }
   return null;
