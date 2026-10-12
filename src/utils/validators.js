@@ -21,13 +21,15 @@ function sanitizeString(value) {
   return value.replace(/[\u0000-\u001F\u007F]/g, '').trim();
 }
 
-function validateEmail(email) {
+// Validates the email format and, unless `options.allowAnyDomain` is set,
+// enforces the OPTIONAL CORPORATE_EMAIL_DOMAIN restriction. The first-run
+// setup flow passes allowAnyDomain so the bootstrap HR admin can use any
+// address (e.g. a personal mailbox) regardless of the corporate domain policy.
+function validateEmail(email, options = {}) {
   if (!isNonEmptyString(email)) return 'Email is required.';
   const value = email.trim().toLowerCase();
   if (!EMAIL_RE.test(value)) return 'Email address is not a valid format.';
-  // Domain restriction is OPTIONAL. When CORPORATE_EMAIL_DOMAIN is unset
-  // (the default) any valid email address is accepted.
-  if (config.corporateEmailDomain) {
+  if (!options.allowAnyDomain && config.corporateEmailDomain) {
     const domain = value.split('@')[1];
     if (domain !== config.corporateEmailDomain) {
       return `Email must use the @${config.corporateEmailDomain} domain.`;

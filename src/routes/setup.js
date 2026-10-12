@@ -51,7 +51,9 @@ router.post(
 
     const body = req.body && typeof req.body === 'object' ? req.body : {};
     const errors = {};
-    const emailErr = validateEmail(body.email);
+    // The bootstrap admin may use ANY email (personal mailbox included), so the
+    // optional corporate-domain restriction is not applied here.
+    const emailErr = validateEmail(body.email, { allowAnyDomain: true });
     if (emailErr) errors.email = emailErr;
     const empErr = validateEmployeeId(body.employeeId);
     if (empErr) errors.employeeId = empErr;
